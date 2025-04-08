@@ -6,6 +6,7 @@ from langchain_core.output_parsers import StrOutputParser
 import logging
 
 from utils.linkdin import scrape_linkdin_profile
+from utils.user_name_and_platform import ask_for_platform
 from agents.linkedin_loopup_agent import lookup
 
 # Configure logging
@@ -33,6 +34,10 @@ if __name__ == "__main__":
         template=summary_template
     )
 
+    # Get user input
+    user = input("\nEnter user name and basic details to search the profile: ")
+    social_media: str = ask_for_platform()
+
     try:
         llm = ChatGoogleGenerativeAI(
             model=model_name_to_use,
@@ -48,10 +53,9 @@ if __name__ == "__main__":
         print("\n--- Result ---")
         print(result)
         print("\n--------------")
-
-        user = input("\nEnter user name and basic details to search the profile: ")
-        linkedin_url = lookup(name=user)
-        print(linkedin_url)
+        
+        print(lookup(user, social_media))
 
     except Exception as e:
         logging.error(f"An error occurred during LangChain execution: {e}", exc_info=True)
+

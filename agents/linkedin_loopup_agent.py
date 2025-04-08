@@ -12,7 +12,7 @@ api_key = os.getenv('GOOGLE_API_KEY')
 model_name_to_use = os.getenv('MODEL_NAME_TO_USE')
 
 
-def lookup(name: str) -> str:
+def lookup(name: str, social_media: str) -> str:
     llm = ChatGoogleGenerativeAI(
         model=model_name_to_use,
         google_api_key=api_key,
@@ -20,20 +20,20 @@ def lookup(name: str) -> str:
     )
 
     template = """
-    given the full name {name_of_person} I wan to get it me a link to their Linkedin profile page.
+    given the full name {name_of_person} I wan to get it me a link to their {social_media} profile page.
     Your anser should contain only a URL
     """
 
     prompt_template = PromptTemplate(
-        input_variables=["name_of_person"],
+        input_variables=["name_of_person", "social_media"],
         template=template
     )
 
     tools_for_agent = [
         Tool(
-            name="Crawl Google for Linkedin profile page",
+            name=f"Crawl Google for {social_media} profile page",
             func=get_profile_url_tavily,
-            description="useful for when you need to get the Linkedin profile page URL for a person"
+            description=f"useful for when you need to get the {social_media} profile page URL for a person"
         )
     ]
 
@@ -42,7 +42,7 @@ def lookup(name: str) -> str:
     agent_executor = AgentExecutor(agent=agent, tools=tools_for_agent, verbose=True)
 
     result = agent_executor.invoke(
-        input= { "input": prompt_template.format_prompt(name_of_person=name)}
+        input= { "input": prompt_template.format_prompt(name_of_person=name, social_media=social_media) }
     )
 
     linked_profile_url = result["output"]
@@ -51,4 +51,5 @@ def lookup(name: str) -> str:
 
 
 if __name__ == "__main__":
-    linkedin_url = lookup(name = "Eden Marco")
+    linkedin_url = lookup(name = "Eden Marco", social_media = "Linkedin")
+    print(linkedin_url)
