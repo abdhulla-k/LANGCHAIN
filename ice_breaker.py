@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import PromptTemplate
@@ -8,6 +9,8 @@ import logging
 from utils.linkdin import scrape_linkdin_profile
 from utils.user_name_and_platform import ask_for_platform
 from agents.linkedin_loopup_agent import lookup
+
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

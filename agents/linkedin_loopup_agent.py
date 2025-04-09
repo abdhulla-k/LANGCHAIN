@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import PromptTemplate
@@ -7,6 +8,7 @@ from langchain.agents import create_react_agent, AgentExecutor
 from langchain import hub
 
 from tools.tools import get_profile_url_tavily
+load_dotenv()
 
 api_key = os.getenv('GOOGLE_API_KEY')
 model_name_to_use = os.getenv('MODEL_NAME_TO_USE')
