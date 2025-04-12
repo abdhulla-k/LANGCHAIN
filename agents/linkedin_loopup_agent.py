@@ -14,7 +14,7 @@ api_key = os.getenv('GOOGLE_API_KEY')
 model_name_to_use = os.getenv('MODEL_NAME_TO_USE')
 
 
-def lookup(name: str, social_media: str) -> str:
+def lookup(name: str, social_media: str, is_details: bool = True) -> str:
     llm = ChatGoogleGenerativeAI(
         model=model_name_to_use,
         google_api_key=api_key,
@@ -26,9 +26,14 @@ def lookup(name: str, social_media: str) -> str:
     Your anser should contain only a URL
     """
 
+    templateForDetails = """
+    given the full name {name_of_person} I wan to get all the details about them. 
+    Your anser should contain a full data set of the person. Social media posts 
+    """
+
     prompt_template = PromptTemplate(
         input_variables=["name_of_person", "social_media"],
-        template=template
+        template= templateForDetails if is_details else template
     )
 
     tools_for_agent = [
@@ -36,6 +41,11 @@ def lookup(name: str, social_media: str) -> str:
             name=f"Crawl Google for {social_media} profile page",
             func=get_profile_url_tavily,
             description=f"useful for when you need to get the {social_media} profile page URL for a person"
+        ),
+        Tool(
+            name=f"Search {social_media} for {name}",
+            func=get_profile_url_tavily,
+            description=f"useful for when you need to get the {social_media} details for a person"
         )
     ]
 
