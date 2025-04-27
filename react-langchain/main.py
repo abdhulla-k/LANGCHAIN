@@ -5,6 +5,9 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.agents.output_parsers import ReActSingleInputOutputParser
 from langchain.schema import AgentAction, AgentFinish
 from typing import Union, List
+from langchain.agents.format_scratchpad import format_log_to_str
+
+from callbacks import AgentCallbackHandler
 
 import os
 from dotenv import load_dotenv
@@ -87,12 +90,12 @@ if __name__ == "__main__":
     Final Answer: the final answer to the original input question
     
     IMPORTANT: For your *first response*, generate only up to and including 
-    Action Input. Stop immediately before generating the Observation.
+    Action Input.
     
     Begin!
 
     Question: {input}
-    Thought: 
+    Thought: {agent_scratchpad}
     """
 
     prompt = PromptTemplate(template=template).partial(
@@ -107,16 +110,48 @@ if __name__ == "__main__":
         model = model_name_to_use,
         google_api_key = api_key,
         temperature = 0,
-        stop = ["\nObservation", "Observation", " Observation"]
+        stop = ["\nObservation", "Observation", " Observation"],
+        callbacks = [AgentCallbackHandler()]
     )
+    intermediate_steps = []
 
-    agent = { "input": lambda x: x["input"] } | prompt | llm | ReActSingleInputOutputParser()
+
+    agent = (
+        { 
+            "input": lambda x: x["input"],
+            "agent_scratchpad": lambda x: format_log_to_str(x['agent_scratchpad']) 
+        } 
+        | prompt 
+        | llm 
+        | ReActSingleInputOutputParser()
+    )
     
-    agent_step: Union[AgentAction, AgentFinish] = agent.invoke({ "input": "What is the length of 'DOG' in characters?"})
+    agent_step: Union[AgentAction, AgentFinish] = agent.invoke({
+        "input": "What is the length of 'DOG' in characters?",
+        "agent_scratchpad": intermediate_steps
+    })
     print(agent_step)
 
     tool_name = agent_step.tool
     tool_to_use = find_tool_by_name(tools, tool_name)
     tool_input = agent_step.tool_input
     observation = tool_to_use.func(str(tool_input))
-    print(f"Final Answer: {observation}")
+
+    intermediate_steps.append((agent_step, str(observation)))
+
+    agent_step: Union[AgentAction, AgentFinish] = agent.invoke({
+        "input": "What is the length of 'DOG' in characters?",
+        "agent_scratchpad": intermediate_steps
+    })
+    
+    if isinstance(agent_step, AgentFinish):
+        final_answer = agent_step.return_values["output"]
+        print(f"Final Answer: {final_answer}")
+        
+    if isinstance(agent_step, AgentAction):
+        tool_name = agent_step.tool
+
+
+    print(agent_step)
+
+
