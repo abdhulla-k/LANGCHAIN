@@ -5,6 +5,9 @@ name = "pypi"
 
 [packages]
 langchain = "*"
+langchain-pinecone = "*"
+black = "*"
+langchain-google-vertexai = "*"
 
 [dev-packages]
 
