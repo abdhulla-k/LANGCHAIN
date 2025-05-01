@@ -8,6 +8,8 @@ langchain = "*"
 langchain-pinecone = "*"
 black = "*"
 langchain-google-vertexai = "*"
+pypdf = "*"
+faiss-cpu = "*"
 
 [dev-packages]
 
