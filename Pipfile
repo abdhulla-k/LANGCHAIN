@@ -10,8 +10,10 @@ black = "*"
 langchain-google-vertexai = "*"
 pypdf = "*"
 faiss-cpu = "*"
+dotenv = "*"
+langchain-community = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.10"
+python_version = "3.13.3"
