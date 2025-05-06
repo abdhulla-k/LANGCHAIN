@@ -1,5 +1,6 @@
 import os
-api_key = os.environ.get('GOOGLE_API_KEY')
+
+api_key = os.environ.get("GOOGLE_API_KEY")
 
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import CharacterTextSplitter
@@ -14,10 +15,12 @@ llm_model = os.getenv("MODEL_NAME_TO_USE")
 
 if __name__ == "__main__":
     print("Hello vector")
-    pdf_path = "/home/abdhulla-k/aside/loading/ice_breaker/vectorstor-in-memory/react.pdf"
+    pdf_path = (
+        "/home/abdhulla-k/aside/loading/ice_breaker/vectorstor-in-memory/react.pdf"
+    )
     loader = PyPDFLoader(file_path=pdf_path)
     pages = loader.load()
-    
+
     # Splitt the loaded document into managable chunks by llm
     text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
     docs = text_splitter.split_documents(pages)
@@ -27,7 +30,9 @@ if __name__ == "__main__":
     vectorstore = FAISS.from_documents(documents=docs[30:33], embedding=embeddings)
     vectorstore.save_local("faiss_index_react")
 
-    new_vectorstore = FAISS.load_local("faiss_index_react", embeddings, allow_dangerous_deserialization=True)
+    new_vectorstore = FAISS.load_local(
+        "faiss_index_react", embeddings, allow_dangerous_deserialization=True
+    )
 
     retrival_qa_prompt = hub.pull("langchain-ai/retrieval-qa-chat")
     llm = ChatGoogleGenerativeAI(
@@ -42,4 +47,3 @@ if __name__ == "__main__":
 
     res = retrieval_chain.invoke({"input": "give me the gist of ReAct in 3 sentences"})
     print(res["answer"])
-    

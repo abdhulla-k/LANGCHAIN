@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Interface</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        nav a { margin-right: 15px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/">Home (Chat)</a>
+        <a href="/ingestion/">Data Ingestion</a>
+    </nav>
+    <h1>Chat Interface</h1>
+    <p>This is where your chat interface will go. You can add a form, message display area, etc., here using HTML and JavaScript.</p>
+
+    <div id="chat-area" style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll;">
+        <p>User: Hello!</p>
+        <p>AI: Hi there! How can I help?</p>
+    </div>
+    <form id="chat-form" style="margin-top: 10px;">
+        <input type="text" id="user-input" placeholder="Type your message..." style="width: 80%;">
+        <button type="submit">Send</button>
+    </form>
+
+    <script>
+        // You would add JavaScript here later to handle sending messages
+        // and displaying responses dynamically.
+        document.getElementById('chat-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const userInput = document.getElementById('user-input').value;
+            console.log("Message sent:", userInput);
+            // Add logic here to send message to backend (e.g., via AJAX)
+            // and update the chat-area div.
+            document.getElementById('user-input').value = ''; // Clear input
+        });
+    </script>
+</body>
+</html>

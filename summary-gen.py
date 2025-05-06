@@ -8,11 +8,11 @@ from langchain_core.output_parsers import StrOutputParser
 from agents.linkedin_loopup_agent import lookup
 
 
+api_key = os.getenv("GOOGLE_API_KEY")
 
-api_key = os.getenv('GOOGLE_API_KEY')
 
 def generate_summary(name: str):
-    model_name_to_use = os.getenv('MODEL_NAME_TO_USE')
+    model_name_to_use = os.getenv("MODEL_NAME_TO_USE")
     summary_template = """
     Given the following Linkedin information about a person:
     {information}
@@ -25,8 +25,7 @@ def generate_summary(name: str):
     """
 
     summary_prompt_template = PromptTemplate(
-        input_variables=["information"],
-        template=summary_template
+        input_variables=["information"], template=summary_template
     )
 
     llm = ChatGoogleGenerativeAI(
@@ -39,11 +38,10 @@ def generate_summary(name: str):
 
     res: Summary = chain.invoke({"information": lookup(name, "Linkedin")})
 
-    return res 
-
+    return res
 
 
 if __name__ == "__main__":
-   load_dotenv()
+    load_dotenv()
 
-   generate_summary(name = "Eden Marco")
+    generate_summary(name="Eden Marco")

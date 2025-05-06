@@ -8,10 +8,11 @@ from langchain.agents import create_react_agent, AgentExecutor
 from langchain import hub
 
 from tools.tools import get_profile_url_tavily
+
 load_dotenv()
 
-api_key = os.getenv('GOOGLE_API_KEY')
-model_name_to_use = os.getenv('MODEL_NAME_TO_USE')
+api_key = os.getenv("GOOGLE_API_KEY")
+model_name_to_use = os.getenv("MODEL_NAME_TO_USE")
 
 
 def lookup(name: str, social_media: str, is_details: bool = True) -> str:
@@ -33,20 +34,20 @@ def lookup(name: str, social_media: str, is_details: bool = True) -> str:
 
     prompt_template = PromptTemplate(
         input_variables=["name_of_person", "social_media"],
-        template= templateForDetails if is_details else template
+        template=templateForDetails if is_details else template,
     )
 
     tools_for_agent = [
         Tool(
             name=f"Crawl Google for {social_media} profile page",
             func=get_profile_url_tavily,
-            description=f"useful for when you need to get the {social_media} profile page URL for a person"
+            description=f"useful for when you need to get the {social_media} profile page URL for a person",
         ),
         Tool(
             name=f"Search {social_media} for {name}",
             func=get_profile_url_tavily,
-            description=f"useful for when you need to get the {social_media} details for a person"
-        )
+            description=f"useful for when you need to get the {social_media} details for a person",
+        ),
     ]
 
     react_prompt = hub.pull("hwchase17/react")
@@ -54,14 +55,17 @@ def lookup(name: str, social_media: str, is_details: bool = True) -> str:
     agent_executor = AgentExecutor(agent=agent, tools=tools_for_agent, verbose=True)
 
     result = agent_executor.invoke(
-        input= { "input": prompt_template.format_prompt(name_of_person=name, social_media=social_media) }
+        input={
+            "input": prompt_template.format_prompt(
+                name_of_person=name, social_media=social_media
+            )
+        }
     )
 
     linked_profile_url = result["output"]
     return linked_profile_url
 
 
-
 if __name__ == "__main__":
-    linkedin_url = lookup(name = "Eden Marco", social_media = "Linkedin")
+    linkedin_url = lookup(name="Eden Marco", social_media="Linkedin")
     print(linkedin_url)

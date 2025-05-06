@@ -12,8 +12,10 @@ pypdf = "*"
 faiss-cpu = "*"
 dotenv = "*"
 langchain-community = "*"
+django = "*"
 
 [dev-packages]
+black = "*"
 
 [requires]
 python_version = "3.13.3"

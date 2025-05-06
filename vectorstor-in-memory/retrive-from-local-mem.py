@@ -1,5 +1,6 @@
 import os
-api_key = os.environ.get('GOOGLE_API_KEY')
+
+api_key = os.environ.get("GOOGLE_API_KEY")
 
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import CharacterTextSplitter
@@ -15,7 +16,9 @@ llm_model = os.getenv("MODEL_NAME_TO_USE")
 if __name__ == "__main__":
     embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-exp-03-07")
 
-    new_vectorstore = FAISS.load_local("faiss_index_react", embeddings, allow_dangerous_deserialization=True)
+    new_vectorstore = FAISS.load_local(
+        "faiss_index_react", embeddings, allow_dangerous_deserialization=True
+    )
 
     retrival_qa_prompt = hub.pull("langchain-ai/retrieval-qa-chat")
     llm = ChatGoogleGenerativeAI(
@@ -31,4 +34,3 @@ if __name__ == "__main__":
     question = input("Enter you question?")
     res = retrieval_chain.invoke({"input": question})
     print(res["answer"])
-    

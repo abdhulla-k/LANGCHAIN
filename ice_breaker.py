@@ -13,15 +13,17 @@ from agents.linkedin_loopup_agent import lookup
 load_dotenv()
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
-api_key = os.getenv('GOOGLE_API_KEY')
+api_key = os.getenv("GOOGLE_API_KEY")
 
 
 if __name__ == "__main__":
     print("Hello Langchain with Google Gemini")
 
-    model_name_to_use = os.getenv('MODEL_NAME_TO_USE')
+    model_name_to_use = os.getenv("MODEL_NAME_TO_USE")
 
     summary_template = """
     Given the following Linkedin information about a person:
@@ -33,8 +35,7 @@ if __name__ == "__main__":
     """
 
     summary_prompt_template = PromptTemplate(
-        input_variables=["information"],
-        template=summary_template
+        input_variables=["information"], template=summary_template
     )
 
     # Get user input
@@ -56,9 +57,10 @@ if __name__ == "__main__":
         print("\n--- Result ---")
         print(result)
         print("\n--------------")
-        
+
         print(lookup(user, social_media))
 
     except Exception as e:
-        logging.error(f"An error occurred during LangChain execution: {e}", exc_info=True)
-
+        logging.error(
+            f"An error occurred during LangChain execution: {e}", exc_info=True
+        )

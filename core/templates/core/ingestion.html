@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Ingestion</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        nav a { margin-right: 15px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/">Home (Chat)</a>
+        <a href="/ingestion/">Data Ingestion</a>
+    </nav>
+    <h1>Data Ingestion</h1>
+    <p>This is where you will build the interface for ingesting data (e.g., uploading files, pasting text, connecting to sources) that your Langchain/LangGraph application will use.</p>
+
+    <form id="ingestion-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %} {# Django template tag for CSRF protection #}
+        <input type="file" name="data_file">
+        <button type="submit">Upload Data</button>
+    </form>
+
+    <p style="margin-top: 20px;">You would add logic in the Django view (ingestion_view) to handle the form submission, process the uploaded data using Langchain/LangGraph, and save it or index it.</p>
+</body>
+</html>
