@@ -7,6 +7,7 @@
     <style>
         body { font-family: sans-serif; margin: 20px; }
         nav a { margin-right: 15px; }
+        #response-message { margin-top: 20px; padding: 10px; border: 1px solid #ccc; min-height: 30px; }
     </style>
 </head>
 <body>
@@ -15,14 +16,54 @@
         <a href="/ingestion/">Data Ingestion</a>
     </nav>
     <h1>Data Ingestion</h1>
-    <p>This is where you will build the interface for ingesting data (e.g., uploading files, pasting text, connecting to sources) that your Langchain/LangGraph application will use.</p>
+    <p>Upload a PDF file for processing by Langchain.</p>
 
     <form id="ingestion-form" method="post" enctype="multipart/form-data">
         {% csrf_token %} {# Django template tag for CSRF protection #}
-        <input type="file" name="data_file">
-        <button type="submit">Upload Data</button>
+        <input type="file" name="data_file" accept=".pdf"> {# Added accept=".pdf" #}
+        <button type="submit">Upload and Process</button>
     </form>
 
-    <p style="margin-top: 20px;">You would add logic in the Django view (ingestion_view) to handle the form submission, process the uploaded data using Langchain/LangGraph, and save it or index it.</p>
+    <div id="response-message"></div> {# Area to display server response #}
+
+    <script>
+        // Optional: Add JavaScript to handle form submission via AJAX
+        // This prevents a full page reload and allows displaying the response below the form.
+        const form = document.getElementById('ingestion-form');
+        const responseDiv = document.getElementById('response-message');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const formData = new FormData(form);
+
+            responseDiv.textContent = 'Uploading and processing...'; // Show loading message
+
+            fetch(form.action, {
+                method: form.method,
+                body: formData,
+                // Django requires the CSRF token header for AJAX POST requests
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    // Handle HTTP errors
+                    return response.text().then(text => { throw new Error(`HTTP error! status: ${response.status}\n${text}`) });
+                }
+                return response.text(); // Get the response text
+            })
+            .then(text => {
+                responseDiv.textContent = 'Success: ' + text; // Display success message
+                responseDiv.style.color = 'green';
+            })
+            .catch(error => {
+                responseDiv.textContent = 'Error: ' + error.message; // Display error message
+                responseDiv.style.color = 'red';
+                console.error('Upload failed:', error);
+            });
+        });
+    </script>
 </body>
 </html>
