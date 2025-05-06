@@ -1,10 +1,17 @@
 import os
+from dotenv import load_dotenv
 
 from django.shortcuts import render
 from django.http import HttpResponse
 
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import CharacterTextSplitter
+from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
+from supabase.client import Client, create_client
+from langchain_community.vectorstores import SupabaseVectorStore
+from langchain_core.documents import Document
+
+load_dotenv()
 
 
 # Create your views here.
@@ -46,17 +53,37 @@ def ingestion_view(request):
                 # Split text
                 text_splitter = CharacterTextSplitter(
                     chunk_size=1000,
-                    chunk_overlap=50,
+                    chunk_overlap=0,
+                )
+                text = text_splitter.split_documents(documents=pages)
+
+                # API keys
+                google_api_key = os.getenv("GOOGLE_API_KEY")
+                supabase_url = os.getenv("SUPABASE_DB_URL")
+                supabase_key = os.getenv("SUPABASE_DB_SERVICE_ROLE_KEY")
+
+                # Generate embeddings
+                embedding = GoogleGenerativeAIEmbeddings(
+                    model="models/gemini-embedding-exp-03-07",
+                    google_api_key=google_api_key,
                 )
 
-                text = text_splitter.split_documents(documents=pages)
-                print(len(text))
-                print("\n\n-----------------")
-                print(text[0])
-                print("\n\n-----------------")
+                supabase_client: Client = create_client(supabase_url, supabase_key)
 
-            except:
-                "error"
+                query_name = "match_documents"
+                table_name = "documents"
+
+                vector_store = SupabaseVectorStore.from_documents(
+                    text,
+                    embedding,
+                    client=supabase_client,
+                    table_name=table_name,
+                    query_name=query_name,
+                )
+
+            except Exception as error:
+                print(error)
+
             finally:
                 print("completed")
 
